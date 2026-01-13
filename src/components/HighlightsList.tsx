@@ -3,14 +3,14 @@ import type { RefObject } from "react";
 
 interface Props {
   highlights: Highlight[];
-  videoRef: RefObject<HTMLVideoElement> | null;
+  videoRef: RefObject<HTMLVideoElement>;
 }
 
 
 
 export default function HighlightsList({ highlights, videoRef }: Props) {
     function playClip(start: number, end: number) {
-        const video = videoRef && videoRef.current;
+        const video = videoRef.current;
         if (!video) return;
       
         video.currentTime = start;
