@@ -4,7 +4,7 @@ import HighlightsList from "./components/HighlightsList";
 import type { Highlight } from "./types";
 
 export default function App() {
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [highlights, setHighlights] = useState<Highlight[]>([]);
 
