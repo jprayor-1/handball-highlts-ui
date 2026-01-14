@@ -10,9 +10,21 @@ export async function uploadVideo(file: File) {
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "Upload failed");
+    const contentType = response.headers.get("content-type");
+  
+    let errorMessage = "Upload failed";
+  
+    if (contentType && contentType.includes("application/json")) {
+      const error = await response.json();
+      errorMessage = error.message || error.error || errorMessage;
+    } else {
+      const text = await response.text();
+      errorMessage = text.slice(0, 200); // prevent giant dumps
+    }
+  
+    throw new Error(errorMessage);
   }
+  
 
   return response.json();
 }
