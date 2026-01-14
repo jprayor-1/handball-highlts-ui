@@ -2,7 +2,12 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export async function uploadVideo(file: File) {
   const formData = new FormData();
-  formData.append("video", file);
+  const safeFile = new File(
+    [file],
+    "upload.mov",
+    { type: file.type || "video/quicktime" }
+  );
+  formData.append("video", safeFile);
 
   const response = await fetch(`${API_BASE_URL}/upload`, {
     method: "POST",
