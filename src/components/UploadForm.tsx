@@ -1,15 +1,16 @@
 import { useState } from "react";
-import { uploadVideo } from "../api";
+import { presignUpload, uploadToR2, startProcessing } from "../api";
 import type { Highlight } from "../types";
 
 interface Props {
-    onResult: (highlights: Highlight[]) => void;
-    onVideoSelected: (file: File) => void;
-  }
+  onResult: (highlights: Highlight[]) => void;
+  onVideoSelected: (file: File) => void;
+}
 
 export default function UploadForm({ onResult, onVideoSelected }: Props) {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -19,8 +20,18 @@ export default function UploadForm({ onResult, onVideoSelected }: Props) {
     try {
       setLoading(true);
       setError(null);
-      const data = await uploadVideo(file);
-      onResult(data.highlights);
+      setProgress(0);
+
+      // 1️⃣ Presign
+      const { url, key } = await presignUpload(file);
+
+      // 2️⃣ Upload directly to R2
+      await uploadToR2(file, url, setProgress);
+
+      // 3️⃣ Tell backend to process video
+      const result = await startProcessing(key);
+
+      onResult(result.highlights);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -34,17 +45,19 @@ export default function UploadForm({ onResult, onVideoSelected }: Props) {
         type="file"
         accept="video/*"
         onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (file) {
-                setFile(file);
-                onVideoSelected(file);
-            }
+          const selected = e.target.files?.[0];
+          if (selected) {
+            setFile(selected);
+            onVideoSelected(selected);
+          }
         }}
-        />
+      />
+
       <button disabled={!file || loading}>
-        {loading ? "Processing..." : "Upload Video"}
+        {loading ? "Uploading..." : "Upload Video"}
       </button>
 
+      {loading && <p>Upload: {progress}%</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
     </form>
   );

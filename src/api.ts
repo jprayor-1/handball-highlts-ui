@@ -1,49 +1,57 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
-export async function uploadVideo(file: File) {
-  // Optional but smart: guardrail for serverless limits
-  if (file.size > 200 * 1024 * 1024) {
-    throw new Error("Video is too large");
-  }
-
-  const formData = new FormData();
-
-  // Derive a safe extension
-  const originalExt = file.name.split(".").pop()?.toLowerCase();
-  const ext =
-    originalExt && /^[a-z0-9]+$/.test(originalExt)
-      ? originalExt
-      : "mp4";
-
-  // Always use a generated ASCII filename (iOS-safe)
-  const safeFilename = `upload-${Date.now()}.${ext}`;
-
-  // IMPORTANT: pass filename here — do NOT trust file.name
-  formData.append("video", file, safeFilename);
-
-  const response = await fetch(`${API_BASE_URL}/upload`, {
+export async function presignUpload(file: File) {
+  const res = await fetch(`${API_BASE}/api/uploads/presign`, {
     method: "POST",
-    body: formData,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      filename: file.name,
+      filesize: file.size,
+      content_type: file.type,
+    }),
   });
 
-  if (!response.ok) {
-    const contentType = response.headers.get("content-type");
-    let errorMessage = "Upload failed";
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error);
+  return data; // { key, url }
+}
 
-    if (contentType?.includes("application/json")) {
-      const error = await response.json();
-      errorMessage = error.message || error.error || errorMessage;
-    } else {
-      errorMessage = (await response.text()).slice(0, 200);
-    }
+export function uploadToR2(
+  file: File,
+  url: string,
+  onProgress: (pct: number) => void
+) {
+  return new Promise<void>((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
 
-    throw new Error(errorMessage);
-  }
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) {
+        onProgress(Math.round((e.loaded / e.total) * 100));
+      }
+    };
 
-  // Safe JSON parsing
-  try {
-    return await response.json();
-  } catch {
-    return {};
-  }
+    xhr.onload = () => {
+      xhr.status >= 200 && xhr.status < 300
+        ? resolve()
+        : reject(new Error("Upload failed"));
+    };
+
+    xhr.onerror = () => reject(new Error("Upload failed"));
+
+    xhr.open("PUT", url);
+    xhr.setRequestHeader("Content-Type", file.type);
+    xhr.send(file);
+  });
+}
+
+export async function startProcessing(key: string) {
+  const res = await fetch(`${API_BASE}/api/process_video`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ key }),
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error);
+  return data; // { highlights }
 }
