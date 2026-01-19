@@ -1,4 +1,8 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
+const API_BASE = import.meta.env.VITE_API_BASE_URL
+
+if (!API_BASE) {
+  console.error('API_BASE_URL is not defined');
+}
 
 export async function presignUpload(file: File) {
   const res = await fetch(`${API_BASE}/api/uploads/presign`, {
