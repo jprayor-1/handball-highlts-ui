@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { presignUpload, uploadToR2, startProcessing } from "../api";
+import LoadingModal from './LoadingModal';
 import type { Highlight } from "../types";
 
 interface Props {
@@ -40,6 +41,8 @@ export default function UploadForm({ onResult, onVideoSelected }: Props) {
   }
 
   return (
+    <>
+    {loading && <LoadingModal videoProgress={progress} isLoading={loading}/>}
     <form onSubmit={handleSubmit}>
       <input
         type="file"
@@ -60,5 +63,6 @@ export default function UploadForm({ onResult, onVideoSelected }: Props) {
       {loading && <p>Upload: {progress}%</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
     </form>
+    </>
   );
 }
