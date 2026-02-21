@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { presignUpload, uploadToR2, startProcessing } from "../api";
-import LoadingModal from './LoadingModal';
+import LoadingModal from "./LoadingModal";
 import type { Highlight } from "../types";
 
 interface Props {
@@ -42,26 +42,32 @@ export default function UploadForm({ onResult, onVideoSelected }: Props) {
 
   return (
     <>
-    {loading && <LoadingModal videoProgress={progress} isLoading={loading}/>}
-    <form onSubmit={handleSubmit}>
-      <input
-        type="file"
-        accept="video/*"
-        onChange={(e) => {
-          const selected = e.target.files?.[0];
-          if (selected) {
-            setFile(selected);
-            onVideoSelected(selected);
-          }
-        }}
-      />
+      {loading && <LoadingModal videoProgress={progress} isLoading={loading} />}
+      <form onSubmit={handleSubmit}>
+        <input
+          type="file"
+          accept="video/*"
+          onChange={(e) => {
+            const selected = e.target.files?.[0];
+            if (selected) {
+              setFile(selected);
+              onVideoSelected(selected);
+            }
+          }}
+        />
+        <div
+          style={{
+            padding: "24px",
+            borderRadius: "16px",
+            border: "1px solid #eee",
+            marginBottom: "30px",
+          }}
+        >
+          {file && <button disabled={!file || loading}>Upload Video</button>}
+        </div>
 
-      <button disabled={!file || loading}>
-        Upload Video
-      </button>
-
-      {error && <p style={{ color: "red" }}>{error}</p>}
-    </form>
+        {error && <p style={{ color: "red" }}>{error}</p>}
+      </form>
     </>
   );
 }

@@ -4,7 +4,7 @@ import type { RefObject } from "react";
 interface Props {
   highlights: Highlight[];
   videoRef: RefObject<HTMLVideoElement | null>;
-  onAdjust: (uuid: string, startOffset: number, endOffset: number) => void
+  onAdjust: (uuid: string, startOffset: number, endOffset: number) => void;
 }
 
 function formatTime(seconds: number) {
@@ -15,39 +15,73 @@ function formatTime(seconds: number) {
     .padStart(2, "0")}`;
 }
 
-export default function HighlightsList({ highlights, videoRef, onAdjust }: Props) {
-    function playClip(start: number, end: number) {
-        const video = videoRef && videoRef.current;
-        if (!video) return;
-      
-        video.currentTime = start;
-        video.play();
-      
-        const stopAtEnd = () => {
-          if (video.currentTime >= end) {
-            video.pause();
-            video.removeEventListener("timeupdate", stopAtEnd);
-          }
-        };
-      
-        video.addEventListener("timeupdate", stopAtEnd);
+export default function HighlightsList({
+  highlights,
+  videoRef,
+  onAdjust,
+}: Props) {
+  function playClip(start: number, end: number) {
+    const video = videoRef && videoRef.current;
+    if (!video) return;
+
+    video.currentTime = start;
+    video.play();
+
+    const stopAtEnd = () => {
+      if (video.currentTime >= end) {
+        video.pause();
+        video.removeEventListener("timeupdate", stopAtEnd);
       }
-      
+    };
+
+    video.addEventListener("timeupdate", stopAtEnd);
+  }
 
   return (
     <ul style={{ marginTop: 20 }}>
-      {highlights.map((h) => (
+      {highlights.map((highlight) => (
         <li
-          key={h.id}
-          style={{ cursor: "pointer", marginBottom: 8 }}
-          onClick={() => playClip(h.start, h.end)}
+          key={highlight.id}
+          style={{
+            padding: "16px",
+            borderRadius: "12px",
+            background: "#fff",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+            marginBottom: "16px",
+          }}
+          onClick={() => playClip(highlight.start, highlight.end)}
         >
-          <div style={{display: "flex"}}>
-            <button onClick={() => onAdjust(h.id, -2, 0)}>-2 Second Before</button>
-            <button onClick={() => onAdjust(h.id, 0, 2)}>2 Second After</button>
+          <div style={{ display: "flex" }}>
+            <button
+              style={{
+                padding: "8px 14px",
+                borderRadius: "8px",
+                border: "none",
+                background: "#111",
+                color: "#fff",
+                cursor: "pointer",
+                marginRight: "8px",
+              }}
+              onClick={() => onAdjust(highlight.id, -2, 0)}
+            >
+              -2 Second Before
+            </button>
+            <button
+              style={{
+                padding: "8px 14px",
+                borderRadius: "8px",
+                border: "none",
+                background: "#111",
+                color: "#fff",
+                cursor: "pointer",
+                marginRight: "8px",
+              }}
+              onClick={() => onAdjust(highlight.id, 0, 2)}
+            >
+              2 Second After
+            </button>
           </div>
-          
-          ▶ {formatTime(h.start)}→ {formatTime(h.end)}
+          ▶ {formatTime(highlight.start)}→ {formatTime(highlight.end)}
         </li>
       ))}
     </ul>

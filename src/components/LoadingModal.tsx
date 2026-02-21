@@ -1,70 +1,74 @@
 interface Props {
-    videoProgress: number;
-    isLoading: boolean;
-
+  videoProgress: number;
+  isLoading: boolean;
 }
 
-export default function LoadingModal ({videoProgress, isLoading}: Props) {
-    return (
-        <div
+export default function LoadingModal({ videoProgress, isLoading }: Props) {
+  return (
+    <div
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
+        backgroundColor: "rgba(0,0,0,0.5)",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        zIndex: 1000,
+      }}
+    >
+      <div
         style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100vw",
-          height: "100vh",
-          backgroundColor: "rgba(0,0,0,0.5)",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          zIndex: 1000,
+          background: "#fff",
+          padding: "2rem",
+          borderRadius: "8px",
+          textAlign: "center",
+          minWidth: "300px",
         }}
-        >
-        <div
-          style={{
-            background: "#fff",
-            padding: "2rem",
-            borderRadius: "8px",
-            textAlign: "center",
-            minWidth: "300px",
-          }}
-        >
-          {videoProgress != 100 && (
-            <>
-              <p>Uploading Video...</p>
-              <p>{videoProgress}%</p>
+      >
+        {videoProgress != 100 && (
+          <>
+            <h2 style={{ marginBottom: 8 }}>Analyzing Your Game</h2>
+            <p style={{ color: "#777" }}>
+              Detecting rallies and scoring excitement...
+            </p>
+            <p>{videoProgress}%</p>
+            <div
+              style={{
+                height: "10px",
+                background: "#eee",
+                borderRadius: "5px",
+                overflow: "hidden",
+                marginTop: "1rem",
+              }}
+            >
               <div
                 style={{
-                  height: "10px",
-                  background: "#eee",
-                  borderRadius: "5px",
-                  overflow: "hidden",
-                  marginTop: "1rem",
+                  width: `${videoProgress}%`,
+                  height: "100%",
+                  background: "#4caf50",
+                  transition: "width 0.2s ease",
                 }}
-              >
-                <div
-                  style={{
-                    width: `${videoProgress}%`,
-                    height: "100%",
-                    background: "#4caf50",
-                    transition: "width 0.2s ease",
-                  }}
-                />
-              </div>
-            </>
-          )}
-        
-          {isLoading && videoProgress == 100 && (
+              />
+            </div>
+          </>
+        )}
+
+        {isLoading && videoProgress == 100 && (
           <div
-            style= {{
-                color: "black",
+            style={{
+              color: "black",
             }}
           >
             <h2>Generating Handball Clip</h2>
-            <p>This may take a few minutes depending on the size of the video</p>
-          </div>)}
-        </div>
-        </div>
-    )
+            <p>
+              This may take a few minutes depending on the size of the video
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
-
