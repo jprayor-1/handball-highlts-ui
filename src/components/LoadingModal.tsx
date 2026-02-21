@@ -61,7 +61,7 @@ export default function LoadingModal ({videoProgress, isLoading}: Props) {
             }}
           >
             <h2>Generating Handball Clip</h2>
-            <p>This may take a few seconds depending on the size of the video</p>
+            <p>This may take a few minutes depending on the size of the video</p>
           </div>)}
         </div>
         </div>

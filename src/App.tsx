@@ -8,6 +8,24 @@ export default function App() {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [highlights, setHighlights] = useState<Highlight[]>([]);
 
+  function adjustHighlightTime(uuid: string, startOffset: number, endOffset: number){
+    setHighlights(prev => 
+      prev.map((highlight) => {
+        if (highlight.id != uuid) return highlight;
+
+        const newStart = Math.max(0, highlight.start + startOffset);
+        const newEnd = highlight.end + endOffset;
+
+        const validateEnd = Math.max(newStart+1, newEnd)
+
+        return {
+          ...highlight,
+          start: newStart,
+          end: validateEnd
+        }
+    }))
+  }
+
   return (
     <div style={{ padding: 20 }}>
       <h1>Handball Highlight Generator</h1>
@@ -32,6 +50,7 @@ export default function App() {
       <HighlightsList
         highlights={highlights}
         videoRef={videoRef}
+        onAdjust={adjustHighlightTime}
       />
     </div>
   );

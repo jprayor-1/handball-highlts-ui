@@ -57,7 +57,7 @@ export default function UploadForm({ onResult, onVideoSelected }: Props) {
       />
 
       <button disabled={!file || loading}>
-        "Upload Video"
+        Upload Video
       </button>
 
       {error && <p style={{ color: "red" }}>{error}</p>}
