@@ -1,10 +1,12 @@
-import type { Highlight } from "../types";
+import { Range } from "react-range";
+import type { EditedHighlights } from "../types";
 import type { RefObject } from "react";
 
 interface Props {
-  highlights: Highlight[];
+  highlights: EditedHighlights[];
   videoRef: RefObject<HTMLVideoElement | null>;
-  onAdjust: (uuid: string, startOffset: number, endOffset: number) => void;
+  videoDuration: number;
+  updateHighlight: (uuid: string, start: number, end: number) => void;
 }
 
 function formatTime(seconds: number) {
@@ -15,10 +17,13 @@ function formatTime(seconds: number) {
     .padStart(2, "0")}`;
 }
 
+const EDIT_WINDOW = 60;
+
 export default function HighlightsList({
   highlights,
   videoRef,
-  onAdjust,
+  videoDuration,
+  updateHighlight,
 }: Props) {
   function playClip(start: number, end: number) {
     const video = videoRef && videoRef.current;
@@ -39,51 +44,73 @@ export default function HighlightsList({
 
   return (
     <ul style={{ marginTop: 20 }}>
-      {highlights.map((highlight) => (
-        <li
-          key={highlight.id}
-          style={{
-            padding: "16px",
-            borderRadius: "12px",
-            background: "#fff",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-            marginBottom: "16px",
-          }}
-          onClick={() => playClip(highlight.start, highlight.end)}
-        >
-          <div style={{ display: "flex" }}>
-            <button
-              style={{
-                padding: "8px 14px",
-                borderRadius: "8px",
-                border: "none",
-                background: "#111",
-                color: "#fff",
-                cursor: "pointer",
-                marginRight: "8px",
-              }}
-              onClick={() => onAdjust(highlight.id, -2, 0)}
-            >
-              -2 Second Before
-            </button>
-            <button
-              style={{
-                padding: "8px 14px",
-                borderRadius: "8px",
-                border: "none",
-                background: "#111",
-                color: "#fff",
-                cursor: "pointer",
-                marginRight: "8px",
-              }}
-              onClick={() => onAdjust(highlight.id, 0, 2)}
-            >
-              2 Second After
-            </button>
-          </div>
-          ▶ {formatTime(highlight.start)}→ {formatTime(highlight.end)}
-        </li>
-      ))}
+      {highlights.map((highlight) => {
+        const minBound = Math.max(0, highlight.originalStart - EDIT_WINDOW);
+
+        const maxBound = Math.min(
+          videoDuration,
+          highlight.originalEnd + EDIT_WINDOW
+        );
+        return (
+          <li
+            key={highlight.id}
+            style={{
+              padding: "16px",
+              borderRadius: "12px",
+              background: "#fff",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+              marginBottom: "16px",
+            }}
+            onClick={() => playClip(highlight.start, highlight.end)}
+          >
+            <div style={{ padding: "8px 0", borderBottom: "1px solid #eee" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: 6,
+                  color: "black",
+                }}
+              >
+                <span>{formatTime(minBound)}</span>→{" "}
+                <span>{formatTime(maxBound)}</span>
+              </div>
+              <Range
+                step={0.1}
+                min={minBound}
+                max={maxBound}
+                values={[highlight.start, highlight.end]}
+                onChange={([start, end]) =>
+                  updateHighlight(highlight.id, start, end)
+                }
+                renderTrack={({ props, children }) => (
+                  <div
+                    {...props}
+                    style={{
+                      height: "6px",
+                      background: "#ddd",
+                      borderRadius: "3px",
+                    }}
+                  >
+                    {children}
+                  </div>
+                )}
+                renderThumb={({ props }) => (
+                  <div
+                    {...props}
+                    style={{
+                      height: "16px",
+                      width: "16px",
+                      backgroundColor: "#111",
+                      borderRadius: "50%",
+                    }}
+                  />
+                )}
+              />
+            </div>
+          </li>
+        );
+      })}
     </ul>
   );
 }

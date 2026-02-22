@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { presignUpload, uploadToR2, startProcessing } from "../api";
 import LoadingModal from "./LoadingModal";
-import type { Highlight } from "../types";
+import type { Highlight, EditedHighlights } from "../types";
 
 interface Props {
-  onResult: (highlights: Highlight[]) => void;
+  setHighlights: (highlights: EditedHighlights[]) => void;
   onVideoSelected: (file: File) => void;
 }
 
-export default function UploadForm({ onResult, onVideoSelected }: Props) {
+export default function UploadForm({ setHighlights, onVideoSelected }: Props) {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState<number>(0);
@@ -32,7 +32,13 @@ export default function UploadForm({ onResult, onVideoSelected }: Props) {
       // 3️⃣ Tell backend to process video
       const result = await startProcessing(key);
 
-      onResult(result.highlights);
+      setHighlights(
+        result.highlights.map((highlight: Highlight) => ({
+          ...highlight,
+          originalStart: highlight.start,
+          originalEnd: highlight.end,
+        }))
+      );
     } catch (err: any) {
       setError(err.message);
     } finally {

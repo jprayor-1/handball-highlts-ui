@@ -1,31 +1,26 @@
 import { useRef, useState } from "react";
 import UploadForm from "./components/UploadForm";
 import HighlightsList from "./components/HighlightsList";
-import type { Highlight } from "./types";
+import type { Highlight, EditedHighlights } from "./types";
 
 export default function App() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
-  const [highlights, setHighlights] = useState<Highlight[]>([]);
+  const [videoDuration, setVideoDuration] = useState<number>(0);
+  const [highlights, setHighlights] = useState<EditedHighlights[]>([]);
 
-  function adjustHighlightTime(
-    uuid: string,
-    startOffset: number,
-    endOffset: number
-  ) {
+  function updateHighlight(id: string, newStart: number, newEnd: number) {
     setHighlights((prev) =>
       prev.map((highlight) => {
-        if (highlight.id != uuid) return highlight;
+        if (highlight.id !== id) return highlight;
 
-        const newStart = Math.max(0, highlight.start + startOffset);
-        const newEnd = highlight.end + endOffset;
-
-        const validateEnd = Math.max(newStart + 1, newEnd);
+        const clampedStart = Math.max(0, newStart);
+        const clampedEnd = Math.max(clampedStart + 0.1, newEnd);
 
         return {
           ...highlight,
-          start: newStart,
-          end: validateEnd,
+          start: clampedStart,
+          end: clampedEnd,
         };
       })
     );
@@ -49,7 +44,7 @@ export default function App() {
         </p>
 
         <UploadForm
-          onResult={setHighlights}
+          setHighlights={setHighlights}
           onVideoSelected={(file) => {
             setVideoUrl(URL.createObjectURL(file));
           }}
@@ -68,6 +63,11 @@ export default function App() {
             ref={videoRef}
             src={videoUrl}
             controls
+            onLoadedMetadata={() => {
+              if (videoRef.current) {
+                setVideoDuration(videoRef.current.duration);
+              }
+            }}
             style={{
               display: "flex",
               justifyContent: "center",
@@ -93,7 +93,8 @@ export default function App() {
           <HighlightsList
             highlights={highlights}
             videoRef={videoRef}
-            onAdjust={adjustHighlightTime}
+            videoDuration={videoDuration}
+            updateHighlight={updateHighlight}
           />
         </div>
       </div>
