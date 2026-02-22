@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import UploadForm from "./components/UploadForm";
 import HighlightsList from "./components/HighlightsList";
-import type { Highlight, EditedHighlights } from "./types";
+import type { EditedHighlights } from "./types";
 
 export default function App() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
