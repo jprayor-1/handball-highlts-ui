@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Play } from "lucide-react";
+import { Play, Flame } from "lucide-react";
 import type { Highlight } from "../types";
 
 interface HighlightCardProps {
@@ -7,33 +7,54 @@ interface HighlightCardProps {
   index: number;
 }
 
-export function HighlightCard({ highlight }: HighlightCardProps) {
+export function HighlightCard({ highlight, index }: HighlightCardProps) {
   const [hasLoaded, setHasLoaded] = useState(false);
 
   return (
-    <div className="relative aspect-video w-full bg-black">
-      {!hasLoaded ? (
-        // Thumbnail UI
-        <div className="absolute inset-0 flex items-center justify-center">
-          <button
-            onClick={() => {
-              setHasLoaded(true);
-            }}
-            className="flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground"
-          >
-            <Play className="ml-1 size-6" />
-          </button>
+    <div className="group overflow-hidden rounded-xl border border-white/10 bg-zinc-900 shadow-lg transition-all hover:-translate-y-1 hover:shadow-2xl">
+      {/* Video Area */}
+      <div className="relative aspect-video w-full bg-black">
+        {!hasLoaded ? (
+          <>
+            {/* Gradient Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+
+            {/* Play Button */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <button
+                onClick={() => setHasLoaded(true)}
+                className="flex size-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-md text-white transition-all duration-300 hover:scale-110 hover:bg-white/30"
+              >
+                <Play className="ml-1 size-7" />
+              </button>
+            </div>
+
+            {/* Clip Number */}
+            <div className="absolute top-3 left-3 rounded-md bg-black/60 px-2 py-1 text-xs font-semibold tracking-wider text-white">
+              #{String(index + 1).padStart(2, "0")}
+            </div>
+          </>
+        ) : (
+          <video
+            src={highlight.url}
+            className="h-full w-full object-cover"
+            controls
+            autoPlay
+            playsInline
+            preload="metadata"
+          />
+        )}
+      </div>
+
+      {/* Card Info Section */}
+      <div className="p-4 space-y-2">
+        <div className="flex items-center justify-between text-xs text-zinc-400">
+          <div className="flex items-center gap-1 text-orange-400">
+            <Flame className="size-3" />
+          </div>
         </div>
-      ) : (
-        <video
-          src={highlight.url}
-          className="h-full w-full object-cover"
-          controls
-          autoPlay
-          playsInline
-          preload="metadata"
-        />
-      )}
+      </div>
     </div>
   );
 }
+``;
