@@ -10,7 +10,7 @@ export function HighlightGrid({ highlights }: Props) {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2
-            className="text-2xl font-bold uppercase tracking-wider text-foreground"
+            className="text-3xl justify-center font-bold uppercase tracking-wider text-foreground"
             style={{ fontFamily: "var(--font-display)" }}
           >
             Your Highlights
