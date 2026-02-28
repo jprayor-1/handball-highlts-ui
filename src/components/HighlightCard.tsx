@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Play, Flame } from "lucide-react";
+import { Play, Download, Flame } from "lucide-react";
 import type { Highlight } from "../types";
 
 interface HighlightCardProps {
@@ -48,10 +48,19 @@ export function HighlightCard({ highlight, index }: HighlightCardProps) {
 
       {/* Card Info Section */}
       <div className="p-4 space-y-2">
-        <div className="flex items-center justify-between text-xs text-zinc-400">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-1 text-orange-400">
             <Flame className="size-3" />
           </div>
+
+          <a
+            href={highlight.url}
+            download={`handball-highlight-${index + 1}.mp4`}
+            className="flex items-center gap-1 rounded-md bg-white/10 px-3 py-1 text-xs text-white transition hover:bg-white/20"
+          >
+            <Download className="size-3" />
+            Download
+          </a>
         </div>
       </div>
     </div>
