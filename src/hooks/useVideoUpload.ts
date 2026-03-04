@@ -28,6 +28,7 @@ export function useVideoUpload() {
           }),
         });
 
+        if (presignUrl.status === 429) throw new Error("You've reached the daily limit (3 videos). Try again tomorrow.");
         if (!presignUrl.ok) throw new Error("Failed to get upload URL");
 
         const presignData = await presignUrl.json();

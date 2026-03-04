@@ -30,6 +30,7 @@ export function useProcessVideo() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ key, ...(email ? { email } : {}) }),
         });
+        if (res.status === 429) throw new Error("You've reached the daily limit (3 videos). Try again tomorrow.");
         if (!res.ok) throw new Error("Failed to queue processing job");
 
         const { job_id } = await res.json();
