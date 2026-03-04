@@ -24,7 +24,7 @@ export function VideoUploader({
         onVideoSelect(file);
       }
     },
-    [onVideoSelect]
+    [onVideoSelect],
   );
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -43,7 +43,7 @@ export function VideoUploader({
         onVideoSelect(file);
       }
     },
-    [onVideoSelect]
+    [onVideoSelect],
   );
 
   const formatFileSize = (bytes: number) => {
@@ -67,7 +67,8 @@ export function VideoUploader({
                 {selectedVideo.name}
               </p>
               <p className="text-sm text-muted-foreground">
-                {formatFileSize(selectedVideo.size)}
+                {formatFileSize(selectedVideo.size)} Upload speed depends on
+                your internet
               </p>
             </div>
           </div>

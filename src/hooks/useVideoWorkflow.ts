@@ -11,7 +11,7 @@ export function useVideoWorkflow() {
   >("idle");
 
   const runWorkflow = useCallback(
-    async (file: File) => {
+    async (file: File, email?: string) => {
       // Step 1, Upload
       setCurrentStep("uploading");
 
@@ -23,7 +23,7 @@ export function useVideoWorkflow() {
 
       // Step 2, Process Video
       setCurrentStep("processing");
-      const highlights = await process.processVideo(key);
+      const highlights = await process.processVideo(key, file.size, email);
 
       if (highlights) {
         setCurrentStep("complete");
@@ -33,7 +33,7 @@ export function useVideoWorkflow() {
 
       return highlights;
     },
-    [upload, process]
+    [upload, process],
   );
 
   const reset = useCallback(() => {
@@ -45,6 +45,7 @@ export function useVideoWorkflow() {
   return {
     runWorkflow,
     currentStep,
+    highlights: process.highlights,
     uploadProgress: upload.uploadProgress,
     isUploading: upload.isUploading,
     isProcessing: process.isProcessing,
