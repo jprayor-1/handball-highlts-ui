@@ -18,6 +18,11 @@ export function useVideoUpload() {
       setError(null);
 
       try {
+        const MAX_FILE_SIZE = 6 * 1024 * 1024 * 1024; // 6GB
+        if (file.size > MAX_FILE_SIZE) {
+          throw new Error("File too large (max 6GB)");
+        }
+
         const presignUrl = await fetch(`${API_BASE}/api/uploads/presign`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },

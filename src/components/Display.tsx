@@ -10,6 +10,7 @@ import { useVideoWorkflow } from "../hooks/useVideoWorkflow";
 export function Display() {
   const [selectedVideo, setSelectedVideo] = useState<File | null>(null);
   const [email, setEmail] = useState("");
+  const [gameType, setGameType] = useState<"singles" | "doubles">("singles");
 
   const { runWorkflow, highlights, error, isProcessing, isUploading, reset } =
     useVideoWorkflow();
@@ -28,7 +29,7 @@ export function Display() {
   }
 
   if (error) {
-    return <ErrorPage />;
+    return <ErrorPage message={error ?? undefined} />;
   }
 
   return (
@@ -62,8 +63,31 @@ export function Display() {
               <div className="mt-6 space-y-4">
                 <div>
                   <label className="block text-sm text-muted-foreground mb-1">
-                    Email for notification{" "}
-                    <span className="text-muted-foreground/60">(optional — recommended for large files)</span>
+                    Game type
+                  </label>
+                  <div className="flex gap-2">
+                    {(["singles", "doubles"] as const).map((type) => (
+                      <button
+                        key={type}
+                        onClick={() => setGameType(type)}
+                        className={`flex-1 rounded-lg border px-4 py-2 text-sm font-semibold uppercase tracking-wider transition-colors ${
+                          gameType === type
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border bg-card text-muted-foreground hover:border-primary/50"
+                        }`}
+                      >
+                        {type}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm text-muted-foreground mb-1">
+                    Email for notification , we may take up to 30 minutes to get
+                    back to you
+                    <span className="text-muted-foreground/60">
+                      (optional — recommended for large files)
+                    </span>
                   </label>
                   <input
                     type="email"
@@ -76,7 +100,9 @@ export function Display() {
                 <div className="flex justify-center">
                   <Button
                     size="lg"
-                    onClick={() => runWorkflow(selectedVideo, email || undefined)}
+                    onClick={() =>
+                      runWorkflow(selectedVideo, email || undefined, gameType)
+                    }
                     className="gap-2 text-sm font-semibold uppercase tracking-wider"
                   >
                     <Sparkles className="size-4" />

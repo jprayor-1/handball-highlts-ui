@@ -103,7 +103,7 @@ export function VideoUploader({
         Drop your game footage here
       </p>
       <p className="mt-1 text-center text-sm text-muted-foreground">
-        MP4, MOV, or WebM up to 1GB
+        MP4, MOV, or WebM up to 6GB
       </p>
       <label>
         <input

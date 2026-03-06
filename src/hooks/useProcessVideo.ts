@@ -16,7 +16,12 @@ export function useProcessVideo() {
   const cancelledRef = useRef(false);
 
   const processVideo = useCallback(
-    async (key: string, fileSizeBytes: number, email?: string) => {
+    async (
+      key: string,
+      fileSizeBytes: number,
+      game_type?: string,
+      email?: string,
+    ) => {
       setIsProcessing(true);
       setError(null);
       cancelledRef.current = false;
@@ -28,9 +33,12 @@ export function useProcessVideo() {
         const res = await fetch(`${API_BASE}/api/process_video`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ key, ...(email ? { email } : {}) }),
+          body: JSON.stringify({ key, ...(game_type ? { game_type } : {}), ...(email ? { email } : {}) }),
         });
-        if (res.status === 429) throw new Error("You've reached the daily limit (3 videos). Try again tomorrow.");
+        if (res.status === 429)
+          throw new Error(
+            "You've reached the daily limit (3 videos). Try again tomorrow.",
+          );
         if (!res.ok) throw new Error("Failed to queue processing job");
 
         const { job_id } = await res.json();

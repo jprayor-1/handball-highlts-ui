@@ -11,7 +11,7 @@ export function useVideoWorkflow() {
   >("idle");
 
   const runWorkflow = useCallback(
-    async (file: File, email?: string) => {
+    async (file: File, email?: string, game_type?: string) => {
       // Step 1, Upload
       setCurrentStep("uploading");
 
@@ -23,7 +23,7 @@ export function useVideoWorkflow() {
 
       // Step 2, Process Video
       setCurrentStep("processing");
-      const highlights = await process.processVideo(key, file.size, email);
+      const highlights = await process.processVideo(key, file.size, game_type, email);
 
       if (highlights) {
         setCurrentStep("complete");
