@@ -50,7 +50,7 @@ export function Display() {
           </p>
         </div>
         {isProcessing || isUploading ? (
-          <LoadingPage isProcessing={isProcessing} isUploading={isUploading} />
+          <LoadingPage isProcessing={isProcessing} isUploading={isUploading} email={email || undefined} />
         ) : (
           <>
             <VideoUploader
