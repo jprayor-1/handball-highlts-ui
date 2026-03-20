@@ -18,9 +18,9 @@ export function useVideoUpload() {
       setError(null);
 
       try {
-        const MAX_FILE_SIZE = 35 * 1024 * 1024 * 1024; // 16GB
+        const MAX_FILE_SIZE = 35 * 1024 * 1024 * 1024; // 35GB
         if (file.size > MAX_FILE_SIZE) {
-          throw new Error("File too large (max 16GB)");
+          throw new Error("File too large (max 35GB)");
         }
 
         const presignUrl = await fetch(`${API_BASE}/api/uploads/presign`, {
@@ -33,7 +33,10 @@ export function useVideoUpload() {
           }),
         });
 
-        if (presignUrl.status === 429) throw new Error("You've reached the daily limit (3 videos). Try again tomorrow.");
+        if (presignUrl.status === 429)
+          throw new Error(
+            "You've reached the daily limit (3 videos). Try again tomorrow.",
+          );
         if (!presignUrl.ok) throw new Error("Failed to get upload URL");
 
         const presignData = await presignUrl.json();
@@ -71,7 +74,7 @@ export function useVideoUpload() {
         return null;
       }
     },
-    []
+    [],
   );
 
   const reset = useCallback(() => {
