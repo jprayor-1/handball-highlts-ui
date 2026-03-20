@@ -18,7 +18,7 @@ export function useVideoUpload() {
       setError(null);
 
       try {
-        const MAX_FILE_SIZE = 16 * 1024 * 1024 * 1024; // 16GB
+        const MAX_FILE_SIZE = 35 * 1024 * 1024 * 1024; // 16GB
         if (file.size > MAX_FILE_SIZE) {
           throw new Error("File too large (max 16GB)");
         }
