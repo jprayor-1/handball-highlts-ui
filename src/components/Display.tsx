@@ -1,10 +1,10 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { ErrorPage } from "./ErrorPage";
 import { VideoUploader } from "./VideoUploader";
 import { Button } from "./UI/Button";
 import { LoadingPage } from "./LoadingPage";
 import { Sparkles } from "lucide-react";
-import { HighlightGrid } from "./HighlightGrid";
 import { useVideoWorkflow } from "../hooks/useVideoWorkflow";
 
 export function Display() {
@@ -12,7 +12,8 @@ export function Display() {
   const [email, setEmail] = useState("");
   const [gameType, setGameType] = useState<"singles" | "doubles">("singles");
 
-  const { runWorkflow, highlights, error, isProcessing, isUploading, reset } =
+  const navigate = useNavigate();
+  const { runWorkflow, jobId, error, isProcessing, isUploading, reset } =
     useVideoWorkflow();
 
   const handleVideoSelect = useCallback((file: File) => {
@@ -24,9 +25,9 @@ export function Display() {
     reset();
   }, [reset]);
 
-  if (highlights.length > 0) {
-    return <HighlightGrid highlights={highlights} />;
-  }
+  useEffect(() => {
+    if (jobId) navigate(`/results/${jobId}`);
+  }, [jobId, navigate]);
 
   if (error) {
     return <ErrorPage message={error ?? undefined} />;

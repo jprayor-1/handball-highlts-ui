@@ -46,6 +46,7 @@ export function useVideoWorkflow() {
     runWorkflow,
     currentStep,
     highlights: process.highlights,
+    jobId: process.jobId,
     uploadProgress: upload.uploadProgress,
     isUploading: upload.isUploading,
     isProcessing: process.isProcessing,

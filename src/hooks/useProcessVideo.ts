@@ -13,6 +13,7 @@ export function useProcessVideo() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [highlights, setHighlights] = useState<Highlight[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [jobId, setJobId] = useState<string | null>(null);
   const cancelledRef = useRef(false);
 
   const processVideo = useCallback(
@@ -42,6 +43,7 @@ export function useProcessVideo() {
         if (!res.ok) throw new Error("Failed to queue processing job");
 
         const { job_id } = await res.json();
+        setJobId(job_id);
 
         // Step 2: Poll until finished or failed
         for (let i = 0; i < maxAttempts; i++) {
@@ -85,12 +87,14 @@ export function useProcessVideo() {
     setIsProcessing(false);
     setHighlights([]);
     setError(null);
+    setJobId(null);
   }, []);
 
   return {
     processVideo,
     isProcessing,
     highlights,
+    jobId,
     error,
     reset,
   };
